@@ -1,0 +1,13 @@
+version: "3"
+services:
+  swaddle:
+    container_name: swaddle
+    image: swaddle:v2
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      args:
+        environment: dev
+        status: stable
+    ports:
+        - 8000:8000
