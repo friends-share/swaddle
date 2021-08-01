@@ -16,7 +16,7 @@ class GroupDataManager(AService[GroupData, str]):
     def is_cluster_ready(self, cluster: Cluster, method: DeploymentMethod):
         group = cluster.group
         cluster = (self.get_by_id(group, GroupData(name=group)).clusters or {}).get(cluster.cluster_id)
-        return (cluster.preparation_done or {})[method] if cluster else False
+        return (cluster.preparation_done or {}).get(method, False) if cluster else False
 
     def set_cluster_ready(self, cluster: Cluster, method: DeploymentMethod):
         group = cluster.group
