@@ -89,7 +89,9 @@ class SSH:
     def connect_server(server: Server) -> SSHClient:
         if server.credential:
             if server.credential.secret_key:
-                pass
+                return SSHClient(server=server.ip_address, username=server.credential.name,
+                                 password=server.credential.password, port=server.ssh_port,
+                                 rsa_key=server.credential.secret_key)
             return SSHClient(server=server.ip_address, username=server.credential.name,
                              password=server.credential.password, port=server.ssh_port)
         return SSHClient(server=server.ip_address, port=server.ssh_port or 22)
