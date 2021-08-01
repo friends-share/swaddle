@@ -20,18 +20,18 @@ class ClusterInit(Deploying):
         for app_fabric in stack.apps:
             for cluster_fabric in app_fabric.clusters:
                 cluster = cluster_fabric.cluster
-                cluster_data = self.grouped_data_manager.get_by_id(cluster.cluster_id,
-                                                                   ClusterLog(cluster=cluster, preparation_done={}))
-                if not cluster_data.preparation_done:
+                cluster_data = self.grouped_data_manager.get_cluster(stack.group, cluster.cluster_id)
+                if not self.grouped_data_manager.is_cluster_ready(cluster, method):
                     if cluster_fabric.preparation:
                         self.command_service.process(cluster_data.cluster, cluster_fabric.preparation)
-                    status = Swarmer(cluster).init()
-                    if status:
-                        cluster_data.preparation_done = True
-                        self.grouped_data_manager.save_obj(cluster_data)
-                        messages.append(f"Cluster {cluster.cluster_id} initialised successfully")
+                        status = Swarmer(cluster).init()
+                        if status:
+                            self.grouped_data_manager.set_cluster_ready(cluster_data, method)
+                            messages.append(f"Cluster {cluster.cluster_id} initialised successfully")
+                        else:
+                            return SimpleStatus(status=MinStatus.FAILURE, errors=[f"Failed to init {cluster.cluster_id}"], messages=messages), None
                     else:
-                        return SimpleStatus(status=MinStatus.FAILURE, errors=[f"Failed to init {cluster.cluster_id}"], messages=messages), None
+                        self.grouped_data_manager.set_cluster_ready(cluster_data, method)
                 else:
                     messages.append(f"Cluster {cluster.cluster_id} was already initialised")
             return SimpleStatus(status=MinStatus.SUCCESS, messages=messages), stack
