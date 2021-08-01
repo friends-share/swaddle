@@ -26,8 +26,8 @@ class SSHClient:
     def __connect__(self):
         assert None not in [self.server, self.username], "Mandatory details are not filled for connecting to server"
         ssh_configured = paramiko.SSHClient()
+        ssh_configured.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         if self.password:
-            ssh_configured.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh_configured.connect(self.server, username=self.username, port=self.port or 22, password=self.password)
             return ssh_configured
         elif self.rsa_key:
@@ -37,7 +37,6 @@ class SSHClient:
         elif self.dss_key:
             k = paramiko.DSSKey.from_private_key_file(self.rsa_key)
             ssh_configured.connect(hostname=self.server, port=self.port or 22, username=self.username, pkey=k)
-            ssh_configured.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             return ssh_configured
 
     def run(self, command: Command):
