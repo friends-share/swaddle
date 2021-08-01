@@ -17,9 +17,8 @@ class Level(Enum):
 
 class Credential(BaseModel):
     name: str
-    password: str
+    password: Optional[str]
     secret_key: Optional[str]
-    key_type: Optional[str]
 
 
 class InfraCharacteristic(BaseModel):
