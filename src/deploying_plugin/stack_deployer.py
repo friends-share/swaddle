@@ -38,12 +38,13 @@ class StackDeployer(Deploying):
         node.run(Command(command=f"mkdir {deployment_id}"))
         privileged = server.privileged
         if app.git:
-            if len(node.run_all_safe(
-                    [
-                        Command(command=f"cd {deployment_id}; git clone {app.git.repo}", privileged=privileged),
-                        Command(command=f"cd {deployment_id}; docker-compose build", privileged=privileged),
-                        Command(command=f"cd {deployment_id}; docker stack -c docker-compose.yml {app.name}",
-                                privileged=privileged)])) < 3:
+            cmd_run = node.run_all_safe(
+                [Command(command=f"cd {deployment_id}; git clone {app.git.repo}", privileged=privileged),
+                 Command(command=f"cd {deployment_id}; docker-compose build", privileged=privileged),
+                 Command(command=f"cd {deployment_id}; docker stack -c docker-compose.yml {app.name}",
+                         privileged=privileged)])
+            print(cmd_run)
+            if len(cmd_run) < 3:
                 raise Exception("Failed to deploy application")
             mechanism = "git"
         elif app.docker_compose:

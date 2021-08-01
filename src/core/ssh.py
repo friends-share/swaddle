@@ -71,7 +71,7 @@ class SSHClient:
             if status == 0:
                 run = self.run(command)
                 status = run.status
-                runs[command.command] = run.status
+                runs[command.command] = run
             else:
                 return runs
         return runs
