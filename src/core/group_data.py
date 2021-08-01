@@ -31,6 +31,7 @@ class GroupDataManager(AService[GroupData, str]):
             cluster_log[cluster_id] = cluster
             saved_data.clusters = cluster_log
             self.save_obj(saved_data)
+            return True
         raise Exception("No cluster information found against group")
 
     def add_cluster(self, cluster: Cluster):
