@@ -32,9 +32,9 @@ class Swarmer:
             return False
         for manager in self.other_managers:
             Swarmer._join_as_manager(manager, manager_command)
-
-        for worker in self.workers:
-            Swarmer._join_as_worker(worker, worker_command)
+        if self.workers:
+            for worker in self.workers:
+                Swarmer._join_as_worker(worker, worker_command)
         return True
 
     @staticmethod
