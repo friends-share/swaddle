@@ -42,6 +42,7 @@ class SSHClient:
 
     def run(self, command: Command):
         password_required = False
+        command_str = command.command
         if command.privileged and self.username != "root":
             command_str = f"sudo -S -p '' {command.command}"
             password_required = self.password is not None and len(self.password) > 0
@@ -56,19 +57,25 @@ class SSHClient:
     def run_all(self, commands: List[Command]):
         return {cmd: self.run(cmd) for cmd in commands}
 
-    def run_all(self, commands: CommandGroup):
-        return self.run_all(commands=commands.commands)
+    def run_group(self, command_group: CommandGroup):
+        return self.run_all(commands=command_group.commands)
 
-    def run_safe(self, commands: List[Command]):
+    def run_groups_safe(self, commands: List[CommandGroup]):
+        status = {}
+        for cg in commands:
+            status.update(self.run_all_safe(cg.commands) or {})
+
+    def run_all_safe(self, commands: List[Command]):
         status = 0
-        runs = []
+        runs = {}
         for command in commands:
             if status == 0:
                 run = self.run(command)
                 status = run.status
-                runs.append(run)
+                runs[command.command] = run.status
             else:
                 return runs
+        return runs
 
 
 class SSH:
@@ -83,5 +90,6 @@ class SSH:
         if server.credential:
             if server.credential.secret_key:
                 pass
-            return SSHClient(server=server.ip_address, username=server.credential.name, password=server.credential.password, port=server.ssh_port)
+            return SSHClient(server=server.ip_address, username=server.credential.name,
+                             password=server.credential.password, port=server.ssh_port)
         return SSHClient(server=server.ip_address, port=server.ssh_port or 22)

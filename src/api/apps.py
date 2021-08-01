@@ -33,4 +33,4 @@ async def get_apps(app_name: str, response: Response):
 )
 async def upsert_apps(request: AppsRequest, response: Response):
     data = app_manager.upsert(request)
-    return response_body("upsert_apps", response=response, prcs_status=Status.SUCCESS, data=data)
+    return response_body("upsert_apps", response=response, prcs_status=ProcessStatus(status=Status.SUCCESS, data=data))

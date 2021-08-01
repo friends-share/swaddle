@@ -3,8 +3,6 @@ import uuid
 
 from src import dependency
 from src.core.service import AService, Id
-from src.dependency import cluster_log_store
-from src.model.cluster_log import ClusterLog
 from src.model.server import Cluster, ClusterData
 
 
@@ -20,15 +18,7 @@ class ClusterManager(AService[Cluster, str]):
     def save(self, obj: ClusterData, group: str) -> Cluster:
         cluster = Cluster(cluster_id=uuid.uuid4().hex[:6].upper(), data=obj, created_on=datetime.datetime.now(),
                           group=group)
-        super().save_obj(cluster)
-        self.group_data_manager.add_cluster(cluster)
-        return cluster
-
-
-class ClusterLogManager(AService[ClusterLog, str]):
-
-    def __init__(self):
-        super().__init__(cluster_log_store)
-
-    def get_id(self, obj: ClusterLog) -> Id:
-        return obj.log_id
+        if self.save_obj(cluster):
+            self.group_data_manager.add_cluster(cluster)
+            return cluster
+        return None

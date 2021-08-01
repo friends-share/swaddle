@@ -2,21 +2,19 @@ import uuid
 
 from fastapi import APIRouter
 
-from src.dependency.driver import Deployers
-from src.dependency.manager import Manager
-from src.model.deploy import DeployConfig, DeploymentLog
+from src.dependency.deployers import DEPLOYER
+from src.model.deploy import DeploymentLog, Stack
 
 router = APIRouter(prefix="/api/v1/swaddle")
-deployer = Deployers.SWARM_DEPLOYER
-manager = Manager.DEPLOYMENT_LOG_MANAGER
+manager = DEPLOYER
 
 
 @router.post(
     "/start", tags=["Deployer"],
     summary="Deploy docker containers"
 )
-async def start(request: DeployConfig):
-    return deployer.deploy(request, uuid.uuid4().hex[:6].upper())
+async def start(request: Stack):
+    return manager.deploy(request, uuid.uuid4().hex[:6].upper())
 
 
 @router.get(
@@ -24,8 +22,8 @@ async def start(request: DeployConfig):
     summary="Status of deployment",
     response_model=DeploymentLog
 )
-async def status(deployment_id: str):
-    return manager.get_by_id(deployment_id)
+async def status(group: str, deployment_id: str):
+    return manager.grouped_data_manager.get_deployment_log(group, deployment_id)
 
 
 @router.post(

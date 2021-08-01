@@ -1,5 +1,4 @@
 from src.core.ssh import SSH
-from src.dependency.manager import Manager
 from src.model.apps import App
 from src.model.commands import Command
 from src.model.server import Server, Cluster
@@ -12,7 +11,6 @@ class Swarmer:
         self.main_manager = SSH.connect_server(server)
         self.other_managers = cluster.data.managers[1:]
         self.workers = cluster.data.workers
-        self.logger = Manager.CLUSTER_LOG_MANAGER
 
     def init(self):
         worker_command = None

@@ -4,7 +4,6 @@ from src.dependency.manager import Manager
 from src.model.server import ClusterData, ClusterDataRequest
 
 router = APIRouter(prefix="/api/v1/swaddle")
-server_manager = Manager.SERVER_MANAGER
 cluster_manager = Manager.CLUSTER_MANAGER
 command_manager = Manager.COMMAND_SERVICE
 

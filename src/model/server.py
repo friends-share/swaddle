@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.model import Credential, InfraCharacteristic, Grouped
 from src.model.commands import CommandGroup
@@ -16,6 +16,7 @@ class AServer(BaseModel):
 class Server(AServer):
     credential: Optional[Credential]
     ssh_port: int
+    privileged: bool = Field(default=False)
 
 
 class ServersRequest(BaseModel):
@@ -33,8 +34,9 @@ class ClusterDataRequest(BaseModel):
     def to_cluster_data(self, command_manager):
         return ClusterData(managers=self.managers, workers=self.workers, type=self.type, qualities=self.qualities,
                            max_deployments=self.max_deployments,
-                           environment_setup=[command_manager.get_by_id(command_manager.get_id_components(x, self.type)) for
-                                              x in self.environment_setup])
+                           environment_setup=[command_manager.get_by_id(command_manager.get_id_components(x, self.type))
+                                              for
+                                              x in self.environment_setup] if self.environment_setup else None)
 
 
 class ClusterData(BaseModel):

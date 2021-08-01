@@ -1,16 +1,20 @@
+from typing import List
+
 from src.core.service import Id
+from src.core.ssh import SSH
 from src.model.commands import Command, CommandGroup
 from src.model.message import Status, ProcessStatus
+from src.model.server import Cluster
 from src.storage.cache.store import CommandStore
 
 DEFAULT_CMD = [
     CommandGroup(name="docker-setup", type="ubuntu", commands=[
-        Command(command="apt-get update", privileged=True),
+        Command(command="apt-get update", privileged=False),
         Command(command="apt-get install apt-transport-https ca-certificates curl gnupg lsb-release -y",
-                privileged=True),
+                privileged=False),
         Command(command="curl -fsSL https://get.docker.com -o get-docker.sh"),
         Command(command="chmod +x get-docker.sh"),
-        Command(command="sudo sh get-docker.sh", privileged=True)
+        Command(command="sh get-docker.sh", privileged=False)
     ])
 ]
 
@@ -54,3 +58,11 @@ class CommandService:
 
     def list_all(self):
         return CommandService.cmd_store.get_all()
+
+    def process(self, cluster: Cluster, commands: List[CommandGroup]):
+        servers = cluster.data.managers
+        servers.extend(cluster.data.workers or [])
+        status = []
+        for server in servers:
+            status.append(SSH.connect_server(server).run_all_safe(commands))
+        return status

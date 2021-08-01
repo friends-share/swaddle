@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pydantic import BaseModel, Field
 
@@ -21,10 +21,6 @@ class AppsRequest(BaseModel):
     apps: List[App]
 
 
-class AppStack(BaseModel):
-    deployed_in: Optional[List[Cluster]]
-    stack_name: str
-
-
-class AppLog(App):
-    deployments: Optional[List[AppStack]]
+class AppLog(BaseModel):
+    app: App
+    deployments: Optional[Dict[str, List[str]]]

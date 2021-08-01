@@ -1,6 +1,6 @@
 from src.core.service import AService, Id
-from src.dependency import app_store, app_log_store
-from src.model.apps import AppsRequest, App, AppLog
+from src.dependency import app_store
+from src.model.apps import AppsRequest, App
 
 
 class AppService(AService[App, str]):
@@ -35,12 +35,3 @@ class AppService(AService[App, str]):
 
     def get_by_names(self, *apps):
         return [self.get_by_id(app_name) for app_name in apps]
-
-
-class AppLogManager(AService[AppLog, str]):
-
-    def __init__(self):
-        super().__init__(app_log_store)
-
-    def get_id(self, obj: AppLog) -> Id:
-        return obj.name

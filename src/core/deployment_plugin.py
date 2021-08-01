@@ -1,16 +1,13 @@
 import abc
-from typing import Generic, TypeVar, Tuple, Optional
+from typing import Tuple, Optional
 
-from src.model.deploy import DeploymentStep
+from src.model.deploy import DeploymentStep, DeployingStack
 from src.model.message import SimpleStatus, MinStatus
 
-Component = TypeVar('Component')
-Result = TypeVar('Result')
 
+class Deploying(abc.ABC):
 
-class Deploying(abc.ABC, Generic[Component, Result]):
-
-    def run_step(self, component: Component) -> Tuple[DeploymentStep, SimpleStatus, Optional[Result]]:
+    def run_step(self, component: DeployingStack) -> Tuple[DeploymentStep, SimpleStatus, Optional[DeployingStack]]:
         result, message = self.entry_criteria(component)
         if result:
             process = self.define_process(component)
@@ -18,7 +15,7 @@ class Deploying(abc.ABC, Generic[Component, Result]):
         return self.deployment_step(), SimpleStatus(status=MinStatus.NOT_STARTED, messages=[message]), None
 
     @abc.abstractmethod
-    def define_process(self, component: Component) -> Tuple[SimpleStatus, Result]:
+    def define_process(self, component: DeployingStack) -> Tuple[SimpleStatus, Optional[DeployingStack]]:
         pass
 
     @abc.abstractmethod
@@ -26,5 +23,5 @@ class Deploying(abc.ABC, Generic[Component, Result]):
         pass
 
     @abc.abstractmethod
-    def entry_criteria(self, component: Component) -> Tuple[bool, str]:
+    def entry_criteria(self, component: DeployingStack) -> Tuple[bool, str]:
         pass
