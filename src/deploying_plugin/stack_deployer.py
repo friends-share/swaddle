@@ -23,7 +23,7 @@ class StackDeployer(Deploying):
                 cluster_data = self.group_manager.get_cluster_log(stack.group,
                                                                   cluster_id=cluster_fabric.cluster.cluster_id)
                 messages.append(
-                    f"Deployed {app_fabric.app.name} using deployment method:{self._deploy(cluster_data.data.managers[0], app_fabric.app, stack.deployment_id)}")
+                    f"Deployed {app_fabric.app.name} using deployment method:{self._deploy(cluster_data.cluster.data.managers[0], app_fabric.app, stack.deployment_id)}")
         return SimpleStatus(status=MinStatus.SUCCESS, messages=messages), stack
 
     def deployment_step(self) -> DeploymentStep:
