@@ -76,6 +76,23 @@ class SSHClient:
                 return runs
         return runs
 
+    def run_in_session(self, commands: List[Command]):
+        try:
+            ssh_configured = self.__connect__()
+            session = ssh_configured.get_transport().open_session()
+            session.invoke_shell()
+            while session.recv_ready():
+                session.recv(1024)
+            for command in commands:
+                session.sendall(s=" ".join(["sudo", command.command, "\n"]) if command.privileged else " ".join(
+                    [command.command, "\n"]))
+                # session.sendall("echo $?")
+                # status.append(session.recv(1024).decode('utf-8'))
+            session.close()
+            return 0
+        except:
+            return 1
+
 
 class SSH:
 
