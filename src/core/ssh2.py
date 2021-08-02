@@ -1,12 +1,10 @@
 from dataclasses import dataclass
-from multiprocessing.connection import Connection
 from typing import List
 
 from Exscript import Account, Host, PrivateKey
 from Exscript.protocols import SSH2
 from Exscript.util.start import start
 
-from src.core.ssh import SSHCmdState
 from src.model.commands import Command
 
 
