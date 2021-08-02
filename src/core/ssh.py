@@ -3,6 +3,7 @@ from typing import List
 
 import paramiko
 
+from src.core import vault
 from src.core.ssh2 import SSHClient2
 from src.model.commands import Command, CommandGroup
 from src.model.server import Server
@@ -32,11 +33,11 @@ class SSHClient:
             ssh_configured.connect(self.server, username=self.username, port=self.port or 22, password=self.password)
             return ssh_configured
         elif self.rsa_key:
-            k = paramiko.RSAKey.from_private_key_file(self.rsa_key)
+            k = paramiko.RSAKey.from_private_key_file(vault.get(self.rsa_key))
             ssh_configured.connect(hostname=self.server, port=self.port or 22, username=self.username, pkey=k)
             return ssh_configured
         elif self.dss_key:
-            k = paramiko.DSSKey.from_private_key_file(self.rsa_key)
+            k = paramiko.DSSKey.from_private_key_file(vault.get(self.dss_key))
             ssh_configured.connect(hostname=self.server, port=self.port or 22, username=self.username, pkey=k)
             return ssh_configured
 

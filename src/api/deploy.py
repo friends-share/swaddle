@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 
 from src.dependency.deployers import DEPLOYER
 from src.model.deploy import DeploymentLog, Stack
@@ -13,8 +13,10 @@ manager = DEPLOYER
     "/start", tags=["Deployer"],
     summary="Deploy docker containers"
 )
-async def start(request: Stack):
-    return manager.deploy(request, uuid.uuid4().hex[:6].upper())
+async def start(request: Stack, background_tasks: BackgroundTasks):
+    deployment_id = uuid.uuid4().hex[:6].upper()
+    background_tasks.add_task(manager.deploy, request, deployment_id)
+    return {"deployment_id": deployment_id, "status": "STARTED"}
 
 
 @router.get(

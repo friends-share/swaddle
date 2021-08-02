@@ -5,6 +5,7 @@ from Exscript import Account, Host, PrivateKey
 from Exscript.protocols import SSH2
 from Exscript.util.start import start
 
+from src.core import vault
 from src.model.commands import Command
 
 
@@ -23,9 +24,9 @@ class SSHClient2:
         if self.password:
             return Account(name=self.username, password=self.password), host
         elif self.rsa_key:
-            return Account(name=self.username, key=PrivateKey.from_file(self.rsa_key)), host
+            return Account(name=self.username, key=PrivateKey.from_file(vault.get(self.rsa_key))), host
         elif self.dss_key:
-            return Account(name=self.username, key=PrivateKey.from_file(filename=self.dss_key, keytype="dss")), host
+            return Account(name=self.username, key=PrivateKey.from_file(filename=vault.get(self.dss_key), keytype="dss")), host
 
     def run_all(self, commands: List[Command]):
         def execute_commands(job, host, conn: SSH2):
