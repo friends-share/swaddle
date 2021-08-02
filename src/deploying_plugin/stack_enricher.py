@@ -17,14 +17,14 @@ class DeployingStackBuilder:
         self.cmd_service = cmd_service
         self.group_manager = group_manager
 
-    def run_step(self, component: Stack) -> Tuple[DeploymentStep, SimpleStatus, Optional[DeployingStack]]:
+    def run_step(self, component: Stack, deployment_id) -> Tuple[DeploymentStep, SimpleStatus, Optional[DeployingStack]]:
         result, message = self.entry_criteria(component)
         if result:
-            process = self.define_process(component)
+            process = self.define_process(component, deployment_id)
             return self.deployment_step(), process[0], process[1]
         return self.deployment_step(), SimpleStatus(status=MinStatus.NOT_STARTED, messages=[message]), None
 
-    def define_process(self, stack: Stack) -> Tuple[SimpleStatus, Optional[DeployingStack]]:
+    def define_process(self, stack: Stack, deployment_id) -> Tuple[SimpleStatus, Optional[DeployingStack]]:
         enriched_app_fabrics = []
         group = stack.group
         for app_fabric in stack.apps:
@@ -56,7 +56,7 @@ class DeployingStackBuilder:
                 enriched_server_fabric.append(
                     EnrichedClusterFabric(cluster=cluster_data, preparation=enriched_commands))
             enriched_app_fabrics.append(EnrichedAppFabric(app=app_data, clusters=enriched_server_fabric))
-        return SimpleStatus(status=MinStatus.SUCCESS), DeployingStack(deployment_id="test", name=stack.name,
+        return SimpleStatus(status=MinStatus.SUCCESS), DeployingStack(deployment_id=deployment_id, name=stack.name,
                                                                       based_on=stack.based_on,
                                                                       apps=enriched_app_fabrics, group=group)
 

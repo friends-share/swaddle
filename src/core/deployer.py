@@ -12,7 +12,7 @@ class Deployer:
         self.stack_builder = DeployingStackBuilder(app_service, cmd_service, grouped_data_manager)
 
     def deploy(self, stack: Stack, deployment_id):
-        step, status, starter = self.stack_builder.run_step(stack)
+        step, status, starter = self.stack_builder.run_step(stack, deployment_id)
         if status.status == MinStatus.FAILURE:
             raise Exception(status.errors)
         self.grouped_data_manager.add_deployment(

@@ -41,7 +41,7 @@ class StackDeployer(Deploying):
             cmd_run = node.run_all(
                 [
                     Command(command=f"cd {deployment_id}"),
-                    Command(command=f"git clone {app.git.repo}"),
+                    Command(command=f"git clone {app.git.repo} ."),
                     Command(command=f"docker-compose build", privileged=privileged),
                     Command(command=f"docker stack -c docker-compose.yml {app.name}", privileged=privileged)
                 ])
