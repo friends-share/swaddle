@@ -34,11 +34,11 @@ class StackDeployer(Deploying):
 
     def _deploy(self, server: Server, app: App, deployment_id: str):
         mechanism = None
-        node = SSH.connect_server(server)
+        node = SSH.connect_server2(server)
         node.run(Command(command=f"mkdir {deployment_id}"))
         privileged = server.privileged
         if app.git:
-            cmd_run = node.run_in_session(
+            cmd_run = node.run_all(
                 [
                     Command(command=f"cd {deployment_id}"),
                     Command(command=f"git clone {app.git.repo}"),
@@ -49,7 +49,7 @@ class StackDeployer(Deploying):
                 raise Exception("Failed to deploy application")
             mechanism = "git"
         elif app.docker_compose:
-            if node.run_in_session(
+            if node.run_all(
                     [
                         Command(command=f"cd {deployment_id}"),
                         Command(command=f"echo {json.dumps(app.docker_compose)} >> {app.name}.json"),

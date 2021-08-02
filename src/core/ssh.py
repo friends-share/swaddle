@@ -3,6 +3,7 @@ from typing import List
 
 import paramiko
 
+from src.core.ssh2 import SSHClient2
 from src.model.commands import Command, CommandGroup
 from src.model.server import Server
 
@@ -86,6 +87,7 @@ class SSHClient:
             for command in commands:
                 session.sendall(s=" ".join(["sudo", command.command, "\n"]) if command.privileged else " ".join(
                     [command.command, "\n"]))
+                session.recv(1024)
                 # session.sendall("echo $?")
                 # status.append(session.recv(1024).decode('utf-8'))
             session.close()
@@ -111,3 +113,14 @@ class SSH:
             return SSHClient(server=server.ip_address, username=server.credential.name,
                              password=server.credential.password, port=server.ssh_port)
         return SSHClient(server=server.ip_address, port=server.ssh_port or 22)
+
+    @staticmethod
+    def connect_server2(server: Server) -> SSHClient2:
+        if server.credential:
+            if server.credential.secret_key:
+                return SSHClient2(server=server.ip_address, username=server.credential.name,
+                                  password=server.credential.password, port=server.ssh_port,
+                                  rsa_key=server.credential.secret_key)
+            return SSHClient2(server=server.ip_address, username=server.credential.name,
+                              password=server.credential.password, port=server.ssh_port)
+        return SSHClient2(server=server.ip_address, port=server.ssh_port or 22)
