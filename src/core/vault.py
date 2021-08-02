@@ -1,6 +1,9 @@
 import os
+from pathlib import Path
 
 from fastapi import UploadFile, File
+
+Path("vault").mkdir(parents=True, exist_ok=True)
 
 
 async def put(file: UploadFile = File(...)):
