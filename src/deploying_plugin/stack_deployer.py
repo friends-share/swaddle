@@ -54,7 +54,7 @@ class StackDeployer(Deploying):
                         Command(command=f"cd {deployment_id}"),
                         Command(command=f"echo {json.dumps(app.docker_compose)} >> {app.name}.json"),
                         Command(command=f"docker-compose -f {app.name}.json build", privileged=privileged),
-                        Command(command=f";docker stack -c {app.name}.yml {app.name}", privileged=privileged)
+                        Command(command=f"docker stack -c {app.name}.yml {app.name}", privileged=privileged)
                     ]) == 1:
                 raise Exception("Failed to deploy application")
             mechanism = "dc"
