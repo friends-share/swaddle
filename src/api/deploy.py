@@ -15,7 +15,7 @@ manager = DEPLOYER
 )
 async def start(request: Stack, background_tasks: BackgroundTasks):
     deployment_id = uuid.uuid4().hex[:6].upper()
-    background_tasks.add_task(manager.deploy, request, deployment_id, background_tasks)
+    background_tasks.add_task(manager.deploy, request, deployment_id)
     return {"deployment_id": deployment_id, "status": "STARTED"}
 
 
@@ -25,7 +25,7 @@ async def start(request: Stack, background_tasks: BackgroundTasks):
     response_model=DeploymentLog
 )
 async def status(group: str, deployment_id: str):
-    return manager.grouped_data_manager.get_deployment_log(group, deployment_id)
+    return manager.verify_deployment(group, deployment_id)
 
 
 @router.post(
