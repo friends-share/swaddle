@@ -47,7 +47,7 @@ class StackDeployer(Deploying):
                     Command(command=f"git clone {app.git.repo} ."),
                     Command(command=f"echo docker-compose -f {app.docker_file} build >{deployment_id}.sh", privileged=privileged),
                     Command(command=f"echo docker stack deploy -c {app.docker_file} {app.name} >>{deployment_id}.sh", privileged=privileged),
-                    Command(command=f"echo touch {deployment_id}.\"$?\"'>>{deployment_id}.sh", privileged=privileged),
+                    Command(command=f"echo touch {deployment_id}.\"$?\">>{deployment_id}.sh", privileged=privileged),
                     Command(command=f"chmod +x {deployment_id}.sh", privileged=privileged),
                     Command(command=f"nohup ./{deployment_id}.sh &", privileged=privileged)
                 ])
