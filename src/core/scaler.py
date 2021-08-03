@@ -19,6 +19,5 @@ def get_scale(group: str, app_name: str):
         cluster = group_manager.get_cluster(group, cluster_id)
         manager = cluster.data.managers[0]
         out = ",".join(SSH.connect_server(manager).run(Command(command=command, privileged=manager.privileged)).out)
-        split = out.split("=")
-        data.append({cluster_id: {split[0]: split[1]}})
+        data.append({cluster_id: out})
     return data
