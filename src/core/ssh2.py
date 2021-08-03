@@ -30,11 +30,6 @@ class SSHClient2:
 
     def run_all(self, commands: List[Command]):
         def execute_commands(job, host, conn: SSH2):
-            conn.KEEPALIVE_INTERVAL = 3600
-            conn.client = conn._paramiko_connect()
-            conn.autoinit()
-            conn.set_timeout(3600)
-            conn.set_connect_timeout(3600)
             for command in commands:
                 conn.execute("sudo " + command.command if command.privileged else command.command)
                 conn.execute("echo $?")

@@ -31,8 +31,9 @@ class StackDeployer(Deploying):
 
     def entry_criteria(self, component: DeployingStack) -> Tuple[bool, Optional[str]]:
         return True, None
+    #
+    # def verify_deployment(self, deployment_id: str):
 
-    def verify_deployment
 
     def _deploy(self, server: Server, app: App, deployment_id: str):
         mechanism = None
