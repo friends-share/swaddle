@@ -1,3 +1,5 @@
+from time import sleep
+
 from fastapi import BackgroundTasks
 
 from src.core.group_data import GroupDataManager
@@ -7,6 +9,7 @@ from src.deploying_plugin.stack_enricher import DeployingStackBuilder
 from src.model.commands import Command
 from src.model.deploy import DeploymentLog, Stack, DeploymentStep
 from src.model.message import MinStatus, SimpleStatus
+from loguru import logger
 
 
 class Deployer:
@@ -17,11 +20,13 @@ class Deployer:
 
     def verify_deployment(self, group: str, deployment_id: str):
         deployment_log = self.grouped_data_manager.get_deployment_log(group, deployment_id)
+        logger.info("Deployment watch triggered for {}", deployment_id)
         message = []
         errors = []
         break_run = False
         cluster_count = 0
         while not break_run:
+            sleep(30)
             cluster_count = 0
             for app in deployment_log.config.apps:
                 for cluster in app.clusters:
@@ -63,4 +68,7 @@ class Deployer:
                 break
         if status == MinStatus.RUNNING:
             background_tasks.add_task(self.verify_deployment, stack.group, deployment_id)
+            logger.info("{} deployment watch added to background", deployment_id)
+        else:
+            logger.info("No deployment watch added")
         return self.grouped_data_manager.get_deployment_log(stack.group, deployment_id)
