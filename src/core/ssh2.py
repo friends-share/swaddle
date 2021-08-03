@@ -26,14 +26,15 @@ class SSHClient2:
         elif self.rsa_key:
             return Account(name=self.username, key=PrivateKey.from_file(vault.get(self.rsa_key))), host
         elif self.dss_key:
-            return Account(name=self.username, key=PrivateKey.from_file(filename=vault.get(self.dss_key), keytype="dss")), host
+            return Account(name=self.username,
+                           key=PrivateKey.from_file(filename=vault.get(self.dss_key), keytype="dss")), host
 
     def run_all(self, commands: List[Command]):
         def execute_commands(job, host, conn: SSH2):
             for command in commands:
-                conn.execute("sudo " + command.command if command.privileged else command.command)
-                conn.execute("echo $?")
+                conn.execute("sudo " + command.command + "\n" if command.privileged else command.command)
             conn.close(True)
+
         account, host = self.__connect__()
         host.set_account(account)
         start(account, host, execute_commands)
