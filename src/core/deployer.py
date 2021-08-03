@@ -2,7 +2,7 @@ from src.core.group_data import GroupDataManager
 from src.deploying_plugin.plugins import DeploymentAccessory
 from src.deploying_plugin.stack_enricher import DeployingStackBuilder
 from src.model.deploy import DeploymentLog, Stack
-from src.model.message import MinStatus
+from src.model.message import MinStatus, SimpleStatus
 
 
 class Deployer:
@@ -18,8 +18,12 @@ class Deployer:
         self.grouped_data_manager.add_deployment(
             DeploymentLog(deployment_id=deployment_id, config=starter, group=stack.group, status={step: status}))
         for each in DeploymentAccessory.PLUGINS:
-            step, status, starter = each.run_step(starter)
-            self.grouped_data_manager.update_deployment_status(deployment_id=deployment_id, group=stack.group, deployment_step=step, status=status)
-            if status.status == MinStatus.FAILURE:
+            try:
+                step, status, starter = each.run_step(starter)
+                self.grouped_data_manager.update_deployment_status(deployment_id=deployment_id, group=stack.group, deployment_step=step, status=status)
+                if status.status == MinStatus.FAILURE:
+                    break
+            except Exception as e:
+                self.grouped_data_manager.update_deployment_status(deployment_id=deployment_id, group=stack.group, deployment_step=each.deployment_step(), status=SimpleStatus(status=MinStatus.FAILURE, errors=[str(e)]))
                 break
         return self.grouped_data_manager.get_deployment_log(stack.group, deployment_id)

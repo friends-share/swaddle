@@ -10,4 +10,5 @@ router = APIRouter(prefix="/api/v1/swaddle")
     summary="Scale applications"
 )
 async def post(file: UploadFile = File(...)):
-    return await vault.put(file)
+    await vault.put(file)
+    return {"status": "success"}
