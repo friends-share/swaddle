@@ -15,7 +15,7 @@ manager = DEPLOYER
 )
 async def start(request: Stack, background_tasks: BackgroundTasks):
     deployment_id = uuid.uuid4().hex[:6].upper()
-    background_tasks.add_task(manager.deploy, request, deployment_id)
+    background_tasks.add_task(manager.deploy, request, deployment_id, background_tasks)
     return {"deployment_id": deployment_id, "status": "STARTED"}
 
 
