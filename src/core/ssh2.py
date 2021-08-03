@@ -33,7 +33,6 @@ class SSHClient2:
         def execute_commands(job, host, conn: SSH2):
             for command in commands:
                 conn.execute("sudo " + command.command + "\n" if command.privileged else command.command)
-            conn.close(True)
 
         account, host = self.__connect__()
         host.set_account(account)
