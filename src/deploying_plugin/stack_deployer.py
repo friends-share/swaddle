@@ -19,21 +19,16 @@ class StackDeployer(Deploying):
     def define_process(self, stack: DeployingStack) -> Tuple[SimpleStatus, DeployingStack]:
         messages = []
         for app_fabric in stack.apps:
-            for cluster_fabric in app_fabric.clusters:
-                cluster_data = self.group_manager.get_cluster_log(stack.group,
-                                                                  cluster_id=cluster_fabric.cluster.cluster_id)
+            for cluster_data in app_fabric.clusters:
                 messages.append(
                     f"Deployed {app_fabric.app.name} using deployment method:{self._deploy(cluster_data.cluster.data.managers[0], app_fabric.app, stack.deployment_id)}")
-        return SimpleStatus(status=MinStatus.SUCCESS, messages=messages), stack
+        return SimpleStatus(status=MinStatus.RUNNING, messages=messages), stack
 
     def deployment_step(self) -> DeploymentStep:
         return DeploymentStep.DEPLOYMENT_5
 
     def entry_criteria(self, component: DeployingStack) -> Tuple[bool, Optional[str]]:
         return True, None
-    #
-    # def verify_deployment(self, deployment_id: str):
-
 
     def _deploy(self, server: Server, app: App, deployment_id: str):
         mechanism = None
@@ -45,10 +40,13 @@ class StackDeployer(Deploying):
                 [
                     Command(command=f"cd {deployment_id}"),
                     Command(command=f"git clone {app.git.repo} ."),
-                    Command(command=f"echo docker-compose -f {app.docker_file} build >{deployment_id}.sh", privileged=privileged),
-                    Command(command=f"echo docker stack deploy -c {app.docker_file} {app.name} >>{deployment_id}.sh", privileged=privileged),
+                    Command(command=f"echo docker-compose -f {app.docker_file} build >{deployment_id}.sh",
+                            privileged=privileged),
+                    Command(command=f"echo docker stack deploy -c {app.docker_file} {app.name} >>{deployment_id}.sh",
+                            privileged=privileged),
                     Command(command=f"echo 'status=$?'>>{deployment_id}.sh", privileged=privileged),
-                    Command(command=f"echo 'touch {deployment_id}.$status' >>{deployment_id}.sh", privileged=privileged),
+                    Command(command=f"echo 'touch {deployment_id}.$status' >>{deployment_id}.sh",
+                            privileged=privileged),
                     Command(command=f"chmod +x {deployment_id}.sh", privileged=privileged),
                     Command(command=f"nohup ./{deployment_id}.sh &", privileged=privileged)
                 ])

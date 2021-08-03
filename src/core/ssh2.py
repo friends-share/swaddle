@@ -33,7 +33,7 @@ class SSHClient2:
             for command in commands:
                 conn.execute("sudo " + command.command if command.privileged else command.command)
                 conn.execute("echo $?")
-
+            conn.close(True)
         account, host = self.__connect__()
         host.set_account(account)
         start(account, host, execute_commands)
