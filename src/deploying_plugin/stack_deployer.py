@@ -32,6 +32,8 @@ class StackDeployer(Deploying):
     def entry_criteria(self, component: DeployingStack) -> Tuple[bool, Optional[str]]:
         return True, None
 
+    def verify_deployment
+
     def _deploy(self, server: Server, app: App, deployment_id: str):
         mechanism = None
         node = SSH.connect_server2(server)
@@ -44,6 +46,14 @@ class StackDeployer(Deploying):
                     Command(command=f"git clone {app.git.repo} ."),
                     Command(command=f"echo docker-compose -f {app.docker_file} build >{deployment_id}.sh", privileged=privileged),
                     Command(command=f"echo docker stack deploy -c {app.docker_file} {app.name} >>{deployment_id}.sh", privileged=privileged),
+                    Command(
+                        command=f"echo 'status=$?'>>{deployment_id}.sh",
+                        privileged=privileged),
+                    Command(command=f"echo 'if [[ \"$status\" == \"0\" ]]; then touch {deployment_id}.success fi'>>{deployment_id}.sh", privileged=privileged),
+                    Command(
+                        command=f"echo 'if [[ \"$status\" != \"0\" ]]; then touch {deployment_id}.failed fi'>>{deployment_id}.sh",
+                        privileged=privileged),
+
                     Command(command=f"chmod +x {deployment_id}.sh", privileged=privileged),
                     Command(command=f"nohup ./{deployment_id}.sh &", privileged=privileged)
                 ])
