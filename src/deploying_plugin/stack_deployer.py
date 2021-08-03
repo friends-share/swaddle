@@ -42,10 +42,10 @@ class StackDeployer(Deploying):
                 [
                     Command(command=f"cd {deployment_id}"),
                     Command(command=f"git clone {app.git.repo} ."),
-                    Command(command="docker-compose build >>build.sh", privileged=privileged),
-                    Command(command="chmod +x build.sh", privileged=privileged),
-                    Command(command="nohup ./build.sh &", privileged=privileged),
-                    Command(command=f"docker stack deploy -c docker-compose.yml {app.name}", privileged=privileged)
+                    Command(command=f"echo docker-compose -f {app.docker_file} build >{deployment_id}.sh", privileged=privileged),
+                    Command(command=f"chmod +x {deployment_id}.sh", privileged=privileged),
+                    Command(command=f"nohup ./{deployment_id}.sh &", privileged=privileged),
+                    Command(command=f"docker stack deploy -c {app.docker_file} {app.name}", privileged=privileged)
                 ])
             if cmd_run == 1:
                 raise Exception("Failed to deploy application")
