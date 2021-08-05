@@ -2,5 +2,6 @@ from pydantic import BaseModel
 
 
 class ScaleRequest(BaseModel):
-    name: str
+    app_name: str
+    group: str
     count: int

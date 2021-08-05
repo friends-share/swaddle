@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.core.scaler import get_scale
+from src.core.scaler import get_scale, scale_app
 from src.model.scale import ScaleRequest
 
 router = APIRouter(prefix="/api/v1/swaddle")
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api/v1/swaddle")
     summary="Scale applications"
 )
 async def scale(request: ScaleRequest):
-    pass
+    return scale_app(request.group, request.app_name, request.count)
 
 
 @router.get(
