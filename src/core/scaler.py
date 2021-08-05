@@ -24,8 +24,9 @@ def scale_app(group: str, app_name: str, scale: int):
         service_name = (",".join(cmd_state.out)).replace("\n", " ")
         logger.info("Found {} to scale", service_name)
         if service_name:
-            scale_cmd_state = SSH.connect_server(manager).run(
-                Command(command=_scale_cmd(service_name, scale), privileged=manager.privileged))
+            command = Command(command=_scale_cmd(service_name, scale), privileged=manager.privileged)
+            logger.info("Executing command: {}", command)
+            scale_cmd_state = SSH.connect_server(manager).run(command)
             logger.info("Scale response: {}", scale_cmd_state)
             data.append({cluster_id: scale_cmd_state.status})
         else:
