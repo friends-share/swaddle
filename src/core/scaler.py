@@ -25,7 +25,7 @@ def scale_app(group: str, app_name: str, scale: int):
         if cmd_state.out:
             scaling = []
             for service in cmd_state.out:
-                scaled_service = service.replace("\n", " ")
+                scaled_service = service.replace("\n", "")
                 logger.info("Found {} to scale", scaled_service)
                 command = Command(command=_scale_cmd(scaled_service, scale), privileged=manager.privileged)
                 logger.info("Executing command: {}", command)
@@ -50,7 +50,7 @@ def get_scale(group: str, app_name: str):
         cmd_state = SSH.connect_server(manager).run(Command(command=command, privileged=manager.privileged))
         cluster_data = []
         for service in cmd_state.out:
-            out = service.replace("\n", " ")
+            out = service.replace("\n", "")
             cluster_data.append(json.loads(out))
         data.append({cluster_id: cluster_data})
     return data
