@@ -8,7 +8,7 @@ manager = Manager.GROUPED_DATA_MANAGER
 
 
 @router.get(
-    "/status", tags=["Group"],
+    "/group", tags=["Group"],
     summary="Status of Group",
     response_model=GroupData
 )
