@@ -21,7 +21,7 @@ def scale_app(group: str, app_name: str, scale: int):
         cluster = group_manager.get_cluster(group, cluster_id)
         manager = cluster.data.managers[0]
         cmd_state = SSH.connect_server(manager).run(Command(command=find_service, privileged=manager.privileged))
-        service_name = (",".join(cmd_state.out)).replace("\n", " ")
+        service_name = (",".join(cmd_state.out)).replace("\n", "")
         logger.info("Found {} to scale", service_name)
         if service_name:
             command = Command(command=_scale_cmd(service_name, scale), privileged=manager.privileged)
