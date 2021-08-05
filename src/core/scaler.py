@@ -30,7 +30,7 @@ def get_scale(group: str, app_name: str):
         cluster = group_manager.get_cluster(group, cluster_id)
         manager = cluster.data.managers[0]
         cmd_state = SSH.connect_server(manager).run(Command(command=command, privileged=manager.privileged))
-        out = ",".join(cmd_state.out)
+        out = ",".join(cmd_state.out).replace("\n", "") if cmd_state.out is not None else ""
         logger.info("Scale communication response: {}", cmd_state)
         data.append({cluster_id: out})
     return data
