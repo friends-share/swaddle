@@ -22,7 +22,7 @@ def scale(group: str, app_name: str, scale: int):
 
 def get_scale(group: str, app_name: str):
     app_log = group_manager.get_app_log(group, app_name)
-    command = "docker stack services " + app_name + " --format='{{.Name}}={{.Replicas}}'"
+    command = "docker stack services " + app_name + " --format='{ {{json .Name}}: {{json .Mode}}}'"
     cluster_ids = list(app_log.deployments.keys())
     data = []
     logger.info("Searching scale config for {}", cluster_ids)
@@ -30,7 +30,6 @@ def get_scale(group: str, app_name: str):
         cluster = group_manager.get_cluster(group, cluster_id)
         manager = cluster.data.managers[0]
         cmd_state = SSH.connect_server(manager).run(Command(command=command, privileged=manager.privileged))
-        out = ",".join(cmd_state.out).replace("\n", "") if cmd_state.out is not None else ""
-        logger.info("Scale communication response: {}", cmd_state)
+        out = (",".join(cmd_state.out)).replace("\n", " ")
         data.append({cluster_id: out})
     return data
