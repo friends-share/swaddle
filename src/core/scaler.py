@@ -24,7 +24,7 @@ def scale(group: str, app_name: str, scale: int):
 
 def get_scale(group: str, app_name: str):
     app_log = group_manager.get_app_log(group, app_name)
-    command = "docker stack services " + app_name + " --format='{ {{json .Name}}: {{json .Mode}}}'"
+    command = "docker stack services " + app_name + " --format='{ {{json .Name}}: {{json .Replicas}}}'"
     cluster_ids = list(app_log.deployments.keys())
     data = []
     logger.info("Searching scale config for {}", cluster_ids)
