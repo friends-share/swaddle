@@ -24,10 +24,12 @@ def get_scale(group: str, app_name: str):
     command = "docker stack services " + app_name + " --format = '{{.Name}}={{.Replicas}}'"
     cluster_ids = list(app_log.deployments.keys())
     data = []
+    print(cluster_ids)
     for cluster_id in cluster_ids:
         cluster = group_manager.get_cluster(group, cluster_id)
         manager = cluster.data.managers[0]
-        out = ",".join(SSH.connect_server(manager).run(Command(command=command, privileged=manager.privileged)).out)
-        print(out)
+        cmd_state = SSH.connect_server(manager).run(Command(command=command, privileged=manager.privileged))
+        out = ",".join(cmd_state.out)
+        print(cmd_state)
         data.append({cluster_id: out})
     return data
