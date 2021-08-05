@@ -9,6 +9,7 @@ from src.api.scale import router as scaler
 from src.api.server import router as server
 from src.system_hook import System
 from src.api.files import router as file_api
+from src.api.group import router as group_api
 
 app = FastAPI(
     title="Swaddle",
@@ -31,6 +32,8 @@ logger.info("Adding command namespace route")
 app.include_router(commands)
 logger.info("Adding files namespace route")
 app.include_router(file_api)
+logger.info("Adding group namespace route")
+app.include_router(group_api)
 
 
 @app.on_event("startup")
